@@ -1,0 +1,15 @@
+{
+    "require-dev": {
+        "phpunit/phpunit": "^9.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "PinboardPHP\\Lib\\": "Lib/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "vendor/bin/phpunit --bootstrap test/bootstrap.php"
+        ]
+    }
+}
