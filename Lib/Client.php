@@ -11,9 +11,9 @@ class Client
     private $baseurl;
     private $default_option;
 
-    public function __construct(string $token = '')
+    public function __construct(string $token = '', $client = null)
     {
-        $this->client = new HttpClient();
+        $this->client = new HttpClient($client);
         $this->baseurl = 'https://api.pinboard.in/v1/';
 
         $this->token = $token;
