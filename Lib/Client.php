@@ -43,4 +43,15 @@ class Client
 
         return $response;
     }
+
+    public function recentPosts()
+    {
+        $response = $this->request('GET', 'posts/recent');
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception('エラー');
+        }
+
+        return $response;
+    }
 }
