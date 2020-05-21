@@ -26,7 +26,7 @@ class ClientTest extends TestCase
         $client_mock->expects($this->any())->method('request')->willReturn($response_mock);
 
         $client = new Client(API_TOKEN, $client_mock);
-        $response = $client->recentPosts();
+        $response = $client->recentPosts([]);
         $this->assertEquals($response->getStatusCode(), 200);
         $this->assertEquals($response->getBody()->getContents(), $dummy);
     }

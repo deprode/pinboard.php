@@ -44,9 +44,9 @@ class Client
         return $response;
     }
 
-    public function recentPosts()
+    public function recentPosts($option = [])
     {
-        $response = $this->request('GET', 'posts/recent');
+        $response = $this->request('GET', 'posts/recent', $option);
 
         if ($response->getStatusCode() !== 200) {
             throw new \Exception('エラー');
