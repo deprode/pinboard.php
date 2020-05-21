@@ -54,4 +54,16 @@ class Client
 
         return $response;
     }
+
+    public function datesPosts($option = [])
+    {
+        $response = $this->request('GET', 'posts/dates', $option);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception('エラー');
+        }
+
+        return $response;
+    }
+
 }

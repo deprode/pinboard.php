@@ -30,4 +30,17 @@ class ClientTest extends TestCase
         $this->assertEquals($response->getStatusCode(), 200);
         $this->assertEquals($response->getBody()->getContents(), $dummy);
     }
+
+    public function testDatesPosts()
+    {
+        $dummy = '"{"user":"deprode","tag":"test","dates":{"2020-05-20":"1","2020-05-13":"4"}}';
+        $client_mock = $this->createMock(\GuzzleHttp\Client::class);
+        $response_mock = new GuzzleHttp\Psr7\Response(200,[],$dummy);
+        $client_mock->expects($this->any())->method('request')->willReturn($response_mock);
+
+        $client = new Client(API_TOKEN, $client_mock);
+        $response = $client->datesPosts(['tag' => 'Testing']);
+        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals($response->getBody()->getContents(), $dummy);
+    }
 }
