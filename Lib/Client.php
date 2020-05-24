@@ -10,11 +10,14 @@ class Client
     private $token;
     private $baseurl;
     private $default_option;
+    private $validate;
 
     public function __construct(string $token = '', $client = null)
     {
         $this->client = new HttpClient($client);
         $this->baseurl = 'https://api.pinboard.in/v1/';
+
+        $this->validate = new OptionValidation();
 
         $this->token = $token;
         $this->default_option = ['auth_token' => $this->token, 'format' => 'json'];
@@ -46,6 +49,10 @@ class Client
 
     public function recentPosts($option = [])
     {
+        if ($this->validate->validate($option, ['tag' => 'tag', 'count' => 'integer'])){
+            throw new \Exception('オプションエラー');
+        }
+
         $response = $this->request('GET', 'posts/recent', $option);
 
         if ($response->getStatusCode() !== 200) {
@@ -57,6 +64,10 @@ class Client
 
     public function datesPosts($option = [])
     {
+        if ($this->validate->validate($option, ['tag' => 'tag'])){
+            throw new \Exception('オプションエラー');
+        }
+
         $response = $this->request('GET', 'posts/dates', $option);
 
         if ($response->getStatusCode() !== 200) {
