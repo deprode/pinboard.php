@@ -1,4 +1,7 @@
 {
+    "name": "deprode/pinboard.php",
+    "description": "Pinboard API v1 PHP Client",
+    "license": "MIT",
     "require-dev": {
         "phpunit/phpunit": "^9.1"
     },
