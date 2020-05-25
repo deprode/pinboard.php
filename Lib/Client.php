@@ -77,4 +77,28 @@ class Client
         return $response;
     }
 
+    public function notesList()
+    {
+        $response = $this->request('GET', 'notes/list');
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception('エラー');
+        }
+
+        return $response;
+    }
+
+    public function noteById($id)
+    {
+        if (ctype_xdigit($id) === false){
+            throw new \Exception('オプションエラー');
+        }
+        $response = $this->request('GET', 'notes/'.$id);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception('エラー');
+        }
+
+        return $response;
+    }
 }

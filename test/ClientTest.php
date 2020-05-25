@@ -43,4 +43,31 @@ class ClientTest extends TestCase
         $this->assertEquals($response->getStatusCode(), 200);
         $this->assertEquals($response->getBody()->getContents(), $dummy);
     }
+
+    public function testNotesList()
+    {
+        $dummy = '{"count":1,"notes":[{"id":"cf73bfc02e00edaa1e2b","hash":"0bbca3cba9246bbbda2c","title":"Paul Graham on Hirin\' The Ladies","length":"890","created_at":"2011-10-28 13:37:23","updated_at":"2011-10-28 13:37:23"}';
+        $client_mock = $this->createMock(\GuzzleHttp\Client::class);
+        $response_mock = new GuzzleHttp\Psr7\Response(200,[],$dummy);
+        $client_mock->expects($this->any())->method('request')->willReturn($response_mock);
+
+        $client = new Client(API_TOKEN, $client_mock);
+        $response = $client->notesList();
+        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals($response->getBody()->getContents(), $dummy);
+    }
+
+
+    public function testNotesId()
+    {
+        $dummy = '"{"id":"cf73bfc02e00edaa1e2b","title":"Paul Graham on Hirin\' The Ladies","created_at":"2011-10-28 13:37:23","updated_at":"2011-10-28 13:37:23","length":556,"text":"[2] One advantage startups have over established companies is that there are no discrimination laws about starting businesses. For example, I would be reluctant to start a startup with a woman who had small children, or was likely to have them soon. ..., you can discriminate on any basis you want about who you start it with.","hash":"0bbca3cba9246bbbda2c"}';
+        $client_mock = $this->createMock(\GuzzleHttp\Client::class);
+        $response_mock = new GuzzleHttp\Psr7\Response(200,[],$dummy);
+        $client_mock->expects($this->any())->method('request')->willReturn($response_mock);
+
+        $client = new Client(API_TOKEN, $client_mock);
+        $response = $client->noteById("cf73bfc02e00edaa1e2b");
+        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals($response->getBody()->getContents(), $dummy);
+    }
 }
