@@ -9,13 +9,13 @@ class ClientTest extends TestCase
     public function testLastUpdatePosts()
     {
         $client_mock = $this->createMock(\GuzzleHttp\Client::class);
-        $response_mock = new GuzzleHttp\Psr7\Response(200,[],"\"{\"update_time\":\"2020-05-13T15:37:07Z\"}");
+        $response_mock = new GuzzleHttp\Psr7\Response(200,[],'{"update_time":"2020-05-13T15:37:07Z"}');
         $client_mock->expects($this->any())->method('request')->willReturn($response_mock);
 
         $client = new Client(API_TOKEN, $client_mock);
         $response = $client->lastUpdatePosts();
         $this->assertEquals($response->getStatusCode(), 200);
-        $this->assertEquals($response->getBody()->getContents(), '"{"update_time":"2020-05-13T15:37:07Z"}');
+        $this->assertEquals($response->getBody()->getContents(), '{"update_time":"2020-05-13T15:37:07Z"}');
     }
 
     public function testRecentPosts()
@@ -33,7 +33,7 @@ class ClientTest extends TestCase
 
     public function testDatesPosts()
     {
-        $dummy = '"{"user":"deprode","tag":"test","dates":{"2020-05-20":"1","2020-05-13":"4"}}';
+        $dummy = '{"user":"deprode","tag":"test","dates":{"2020-05-20":"1","2020-05-13":"4"}}';
         $client_mock = $this->createMock(\GuzzleHttp\Client::class);
         $response_mock = new GuzzleHttp\Psr7\Response(200,[],$dummy);
         $client_mock->expects($this->any())->method('request')->willReturn($response_mock);
@@ -60,7 +60,7 @@ class ClientTest extends TestCase
 
     public function testNotesId()
     {
-        $dummy = '"{"id":"cf73bfc02e00edaa1e2b","title":"Paul Graham on Hirin\' The Ladies","created_at":"2011-10-28 13:37:23","updated_at":"2011-10-28 13:37:23","length":556,"text":"[2] One advantage startups have over established companies is that there are no discrimination laws about starting businesses. For example, I would be reluctant to start a startup with a woman who had small children, or was likely to have them soon. ..., you can discriminate on any basis you want about who you start it with.","hash":"0bbca3cba9246bbbda2c"}';
+        $dummy = '{"id":"cf73bfc02e00edaa1e2b","title":"Paul Graham on Hirin\' The Ladies","created_at":"2011-10-28 13:37:23","updated_at":"2011-10-28 13:37:23","length":556,"text":"[2] One advantage startups have over established companies is that there are no discrimination laws about starting businesses. For example, I would be reluctant to start a startup with a woman who had small children, or was likely to have them soon. ..., you can discriminate on any basis you want about who you start it with.","hash":"0bbca3cba9246bbbda2c"}';
         $client_mock = $this->createMock(\GuzzleHttp\Client::class);
         $response_mock = new GuzzleHttp\Psr7\Response(200,[],$dummy);
         $client_mock->expects($this->any())->method('request')->willReturn($response_mock);
