@@ -77,6 +77,28 @@ class Client
         return $response;
     }
 
+    public function userSecret()
+    {
+        $response = $this->request('GET', 'user/secret');
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception('エラー');
+        }
+
+        return $response;
+    }
+
+    public function userToken()
+    {
+        $response = $this->request('GET', 'user/api_token');
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception('エラー');
+        }
+
+        return $response;
+    }
+
     public function notesList()
     {
         $response = $this->request('GET', 'notes/list');
