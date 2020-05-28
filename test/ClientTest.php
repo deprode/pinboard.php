@@ -69,6 +69,45 @@ class ClientTest extends TestCase
         $this->assertEquals($response->getBody()->getContents(), $dummy);
     }
 
+    public function testDeleteTag()
+    {
+        $dummy = '{"result":"done"}';
+        $client_mock = $this->createMock(\GuzzleHttp\Client::class);
+        $response_mock = new GuzzleHttp\Psr7\Response(200,[],$dummy);
+        $client_mock->expects($this->any())->method('request')->willReturn($response_mock);
+
+        $client = new Client(API_TOKEN, $client_mock);
+        $response = $client->renameTag('foo', 'bar');
+        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals($response->getBody()->getContents(), $dummy);
+    }
+
+    public function testRenameTag()
+    {
+        $dummy = '{"result":"done"}';
+        $client_mock = $this->createMock(\GuzzleHttp\Client::class);
+        $response_mock = new GuzzleHttp\Psr7\Response(200,[],$dummy);
+        $client_mock->expects($this->any())->method('request')->willReturn($response_mock);
+
+        $client = new Client(API_TOKEN, $client_mock);
+        $response = $client->renameTag('foo', 'bar');
+        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals($response->getBody()->getContents(), $dummy);
+    }
+
+    public function testGetTags()
+    {
+        $dummy = '{"foo":"11","bar":"4"}';
+        $client_mock = $this->createMock(\GuzzleHttp\Client::class);
+        $response_mock = new GuzzleHttp\Psr7\Response(200,[],$dummy);
+        $client_mock->expects($this->any())->method('request')->willReturn($response_mock);
+
+        $client = new Client(API_TOKEN, $client_mock);
+        $response = $client->getTags();
+        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals($response->getBody()->getContents(), $dummy);
+    }
+
     public function testNotesList()
     {
         $dummy = '{"count":1,"notes":[{"id":"cf73bfc02e00edaa1e2b","hash":"0bbca3cba9246bbbda2c","title":"Paul Graham on Hirin\' The Ladies","length":"890","created_at":"2011-10-28 13:37:23","updated_at":"2011-10-28 13:37:23"}';

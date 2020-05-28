@@ -77,6 +77,49 @@ class Client
         return $response;
     }
 
+    public function deleteTag($tag)
+    {
+        $option = ['tag' => $tag];
+        if ($this->validate->validate($option, ['tag' => 'tag'])){
+            throw new \Exception('オプションエラー');
+        }
+
+        $response = $this->request('GET', 'tags/delete', $option);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception('エラー');
+        }
+
+        return $response;
+    }
+
+    public function renameTag($old, $new)
+    {
+        $option = ['old' => $old, 'new' => $new];
+        if ($this->validate->validate($option, ['old' => 'tag', 'new' => 'tag'])){
+            throw new \Exception('オプションエラー');
+        }
+
+        $response = $this->request('GET', 'tags/rename', $option);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception('エラー');
+        }
+
+        return $response;
+    }
+
+    public function getTags()
+    {
+        $response = $this->request('GET', 'tags/get');
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception('エラー');
+        }
+
+        return $response;
+    }
+
     public function userSecret()
     {
         $response = $this->request('GET', 'user/secret');
