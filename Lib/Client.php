@@ -77,6 +77,132 @@ class Client
         return $response;
     }
 
+    public function addPost($url, $description, $options)
+    {
+        // posts/add
+        $option = array_filter([
+            'url' => $url,
+            'description' => $description,
+            'extended' => $options['extended'] ?? $options['notes'] ?? '',
+            'tags' => $options['tags'] ?? $options['tag'] ?? '',
+            'dt' => $options['datetime'] ?? '',
+            'replace' => $options['replace'] ?? '',
+            'shared' => $options['shared'] ?? '',
+            'toread' => $options['toread'] ?? ''
+        ]);
+        $types = [
+            'url' => 'url',
+            'description' => 'title',
+            'extended' => 'text',
+            'tags' => 'tag',
+            'dt' => 'datetime',
+            'replace' => 'yes',
+            'shared' => 'yes',
+            'toread' => 'no',
+        ];
+        if ($this->validate->validate($option, $types)){
+            throw new \Exception('オプションエラー');
+        }
+
+        $response = $this->request('GET', 'posts/add', $option);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception('エラー');
+        }
+
+        return $response;
+    }
+
+    public function deletePost($url)
+    {
+        $option = ['url' => $url];
+        if ($this->validate->validate($option, ['url' => 'url'])){
+            throw new \Exception('オプションエラー');
+        }
+
+        $response = $this->request('GET', 'posts/delete', $option);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception('エラー');
+        }
+
+        return $response;
+    }
+
+    public function getPost($options)
+    {
+        // posts/get
+        $option = array_filter([
+            'tag' => $options['tag'] ?? '',
+            'datetime' => $options['datetime'] ?? '',
+            'url' => $options['url'] ?? '',
+            'meta' => $options['meta'] ?? '',
+        ]);
+        $types = ['tag' => 'tag', 'dt' => 'datetime', 'url' => 'url', 'meta' => 'no'];
+        if ($this->validate->validate($option, $types)){
+            throw new \Exception('オプションエラー');
+        }
+
+        $response = $this->request('GET', 'posts/get', []);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception('エラー');
+        }
+
+        return $response;
+    }
+
+    public function allPosts($options = [])
+    {
+        $fromdt = isset($options['fromdt']) ? (date_create($options['fromdt']))->format('Y-m-d\TH:i:s\Z') : '';
+        $todt = isset($options['todt']) ? (date_create($options['todt']))->format('Y-m-d\TH:i:s\Z') : '';
+        $option = array_filter([
+            'tag' => $options['tag'] ?? '',
+            'start' => $options['start'] ?? $options['offset'] ?? 0,
+            'results' => $options['results'] ?? $options['count'] ?? null,
+            'fromdt' => $fromdt,
+            'todt' => $todt,
+            'meta' => $options['meta'] ?? ''
+        ]);
+
+        $types = [
+            'tag' => 'tag',
+            'start' => 'int',
+            'results' => 'int',
+            'fromdt' => 'datetime',
+            'todt' => 'datetime',
+            'meta' => 'int'
+        ];
+
+        if ($this->validate->validate($option, $types)){
+            throw new \Exception('オプションエラー');
+        }
+
+        $response = $this->request('GET', 'posts/all', $option);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception('エラー');
+        }
+
+        return $response;
+    }
+
+    public function suggestPost($url)
+    {
+        $option = ['url' => $url];
+        if ($this->validate->validate($option, ['url' => 'url'])){
+            throw new \Exception('オプションエラー');
+        }
+
+        $response = $this->request('GET', 'posts/suggest', $option);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception('エラー');
+        }
+
+        return $response;
+    }
+
     public function deleteTag($tag)
     {
         $option = ['tag' => $tag];

@@ -45,6 +45,69 @@ class ClientTest extends TestCase
         $this->assertEquals($response->getBody()->getContents(), $response_body);
     }
 
+    public function testAddPost()
+    {
+        $response_body = '{"result":"done"}';
+        $client_mock = $this->getClientMock($response_body);
+
+        $client = new Client(API_TOKEN, $client_mock);
+        $response = $client->addPost('http://example.com', 'Example site', ['shared' => 'no']);
+        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals($response->getBody()->getContents(), $response_body);
+    }
+
+    public function testDeletePost()
+    {
+        $response_body = '{"result":"done"}';
+        $client_mock = $this->getClientMock($response_body);
+
+        $client = new Client(API_TOKEN, $client_mock);
+        $response = $client->deletePost('http://example.com');
+        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals($response->getBody()->getContents(), $response_body);
+
+        $response_body = '{"result_code":"item not found"}';
+        $client_mock = $this->getClientMock($response_body);
+
+        $client = new Client(API_TOKEN, $client_mock);
+        $response = $client->deletePost('http://example.com/not_found');
+        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals($response->getBody()->getContents(), $response_body);
+    }
+
+    public function testGetPost()
+    {
+        $response_body = '{"date":"2020-05-01T00:00:00Z","user":"testuser","posts":[{"href":"https:\/\/example.com\/","description":"Example site","extended":"","meta":"92959a96fd69146c5fe7cbde6e5720f2","hash":"54439a52e2efc520d5f9e5e615b89a5d","time":"2020-05-01T00:00:00Z","shared":"yes","toread":"yes","tags":"foo"}';
+        $client_mock = $this->getClientMock($response_body);
+
+        $client = new Client(API_TOKEN, $client_mock);
+        $response = $client->getPost(['url' => 'https://example.com/']);
+        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals($response->getBody()->getContents(), $response_body);
+    }
+
+    public function testAllPosts()
+    {
+        $response_body = '[{"href":"https:\/\/example.com\/first-post","description":"testing first site","extended":"test1","meta":"3bad0cf612e5834221d7242b8fb0f2c4","hash":"6cfedbe75f413c56b6ce79e6fa102aba","time":"2020-05-27T03:13:23Z","shared":"yes","toread":"yes","tags":"foo"},{"href":"https:\/\/example.com\/second\/post","description":"testing second site.","extended":"test2","meta":"c86f6de807c5fef2ddda6d2422e12eea","hash":"ca1e6357399774951eed4628d69eb84b","time":"2020-05-27T03:13:21Z","shared":"yes","toread":"yes","tags":"bar"}];';
+        $client_mock = $this->getClientMock($response_body);
+
+        $client = new Client(API_TOKEN, $client_mock);
+        $response = $client->allPosts(['start' => 1, 'results' => 2]);
+        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals($response->getBody()->getContents(), $response_body);
+    }
+
+    public function testSuggestPost()
+    {
+        $response_body = '[{"popular":[]},{"recommended":["bash","commands","Find","hacks"]}]';
+        $client_mock = $this->getClientMock($response_body);
+
+        $client = new Client(API_TOKEN, $client_mock);
+        $response = $client->suggestPost('https://example.com/');
+        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals($response->getBody()->getContents(), $response_body);
+    }
+
     public function testUserSecret()
     {
         $response_body = '{"result":"6493a84f72d86e7de130"}';
