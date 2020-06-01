@@ -3,6 +3,7 @@
 
 namespace PinboardPHP\Lib;
 
+use PinboardPHP\Lib\Exception\OptionException;
 
 class Client
 {
@@ -50,7 +51,7 @@ class Client
     public function recentPosts($option = [])
     {
         if ($this->validate->validate($option, ['tag' => 'tag', 'count' => 'integer'])){
-            throw new \Exception('オプションエラー');
+            throw new OptionException('オプションエラー');
         }
 
         $response = $this->request('GET', 'posts/recent', $option);
@@ -65,7 +66,7 @@ class Client
     public function datesPosts($option = [])
     {
         if ($this->validate->validate($option, ['tag' => 'tag'])){
-            throw new \Exception('オプションエラー');
+            throw new OptionException('オプションエラー');
         }
 
         $response = $this->request('GET', 'posts/dates', $option);
@@ -101,7 +102,7 @@ class Client
             'toread' => 'no',
         ];
         if ($this->validate->validate($option, $types)){
-            throw new \Exception('オプションエラー');
+            throw new OptionException('オプションエラー');
         }
 
         $response = $this->request('GET', 'posts/add', $option);
@@ -117,7 +118,7 @@ class Client
     {
         $option = ['url' => $url];
         if ($this->validate->validate($option, ['url' => 'url'])){
-            throw new \Exception('オプションエラー');
+            throw new OptionException('オプションエラー');
         }
 
         $response = $this->request('GET', 'posts/delete', $option);
@@ -140,7 +141,7 @@ class Client
         ]);
         $types = ['tag' => 'tag', 'dt' => 'datetime', 'url' => 'url', 'meta' => 'no'];
         if ($this->validate->validate($option, $types)){
-            throw new \Exception('オプションエラー');
+            throw new OptionException('オプションエラー');
         }
 
         $response = $this->request('GET', 'posts/get', []);
@@ -175,7 +176,7 @@ class Client
         ];
 
         if ($this->validate->validate($option, $types)){
-            throw new \Exception('オプションエラー');
+            throw new OptionException('オプションエラー');
         }
 
         $response = $this->request('GET', 'posts/all', $option);
@@ -191,7 +192,7 @@ class Client
     {
         $option = ['url' => $url];
         if ($this->validate->validate($option, ['url' => 'url'])){
-            throw new \Exception('オプションエラー');
+            throw new OptionException('オプションエラー');
         }
 
         $response = $this->request('GET', 'posts/suggest', $option);
@@ -207,7 +208,7 @@ class Client
     {
         $option = ['tag' => $tag];
         if ($this->validate->validate($option, ['tag' => 'tag'])){
-            throw new \Exception('オプションエラー');
+            throw new OptionException('オプションエラー');
         }
 
         $response = $this->request('GET', 'tags/delete', $option);
@@ -223,7 +224,7 @@ class Client
     {
         $option = ['old' => $old, 'new' => $new];
         if ($this->validate->validate($option, ['old' => 'tag', 'new' => 'tag'])){
-            throw new \Exception('オプションエラー');
+            throw new OptionException('オプションエラー');
         }
 
         $response = $this->request('GET', 'tags/rename', $option);
@@ -282,7 +283,7 @@ class Client
     public function noteById($id)
     {
         if (ctype_xdigit($id) === false){
-            throw new \Exception('オプションエラー');
+            throw new OptionException('オプションエラー');
         }
         $response = $this->request('GET', 'notes/'.$id);
 
