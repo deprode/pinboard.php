@@ -3,7 +3,11 @@
 
 namespace PinboardPHP\Lib;
 
+use PinboardPHP\Lib\Exception\BadRespnoseException;
+use PinboardPHP\Lib\Exception\AuthException;
+use PinboardPHP\Lib\Exception\ManyRequestException;
 use PinboardPHP\Lib\Exception\OptionException;
+use GuzzleHttp\Exception\RequestException;
 
 class Client
 {
@@ -34,16 +38,46 @@ class Client
     {
         $uri = $this->baseurl . $path;
         $option = $user_option + $this->default_option;
-        return $this->client->request($method, $uri, $option);
+
+        $response = null;
+        try {
+            $response = $this->client->request($method, $uri, $option);
+        } catch (RequestException $e) {
+            $response = $e->getResponse();
+            if ($this->isAuthError($response)) {
+                throw new AuthException('Auth error');
+            }
+            elseif ($this->isManyRequestError($response)) {
+                throw new ManyRequestException('Too many request');
+            }
+            elseif ($this->isBadResponse($response)) {
+                throw new BadRespnoseException('Error: HTTP status is '.$response->getStatusCode());
+            }
+            else {
+                throw new \Exception($response);
+            }
+        }
+        return $response;
+    }
+
+    protected function isAuthError($response)
+    {
+        return $response && $response->getStatusCode() === 401;
+    }
+
+    protected function isManyRequestError($response)
+    {
+        return $response && $response->getStatusCode() === 429;
+    }
+
+    protected function isBadResponse($response)
+    {
+        return is_null($response) || ($response && $response->getStatusCode() !== 200);
     }
 
     public function lastUpdatePosts()
     {
         $response = $this->request('GET', 'posts/update');
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('エラー');
-        }
 
         return $response;
     }
@@ -54,13 +88,7 @@ class Client
             throw new OptionException('オプションエラー');
         }
 
-        $response = $this->request('GET', 'posts/recent', $option);
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('エラー');
-        }
-
-        return $response;
+        return $this->request('GET', 'posts/recent', $option);
     }
 
     public function datesPosts($option = [])
@@ -69,13 +97,7 @@ class Client
             throw new OptionException('オプションエラー');
         }
 
-        $response = $this->request('GET', 'posts/dates', $option);
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('エラー');
-        }
-
-        return $response;
+        return $this->request('GET', 'posts/dates', $option);
     }
 
     public function addPost($url, $description, $options)
@@ -105,13 +127,7 @@ class Client
             throw new OptionException('オプションエラー');
         }
 
-        $response = $this->request('GET', 'posts/add', $option);
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('エラー');
-        }
-
-        return $response;
+        return $this->request('GET', 'posts/add', $option);
     }
 
     public function deletePost($url)
@@ -179,13 +195,7 @@ class Client
             throw new OptionException('オプションエラー');
         }
 
-        $response = $this->request('GET', 'posts/all', $option);
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('エラー');
-        }
-
-        return $response;
+        return $this->request('GET', 'posts/all', $option);
     }
 
     public function suggestPost($url)
@@ -195,13 +205,7 @@ class Client
             throw new OptionException('オプションエラー');
         }
 
-        $response = $this->request('GET', 'posts/suggest', $option);
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('エラー');
-        }
-
-        return $response;
+        return $this->request('GET', 'posts/suggest', $option);
     }
 
     public function deleteTag($tag)
@@ -211,13 +215,7 @@ class Client
             throw new OptionException('オプションエラー');
         }
 
-        $response = $this->request('GET', 'tags/delete', $option);
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('エラー');
-        }
-
-        return $response;
+        return $this->request('GET', 'tags/delete', $option);
     }
 
     public function renameTag($old, $new)
@@ -227,57 +225,27 @@ class Client
             throw new OptionException('オプションエラー');
         }
 
-        $response = $this->request('GET', 'tags/rename', $option);
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('エラー');
-        }
-
-        return $response;
+        return $this->request('GET', 'tags/rename', $option);
     }
 
     public function getTags()
     {
-        $response = $this->request('GET', 'tags/get');
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('エラー');
-        }
-
-        return $response;
+        return $this->request('GET', 'tags/get');
     }
 
     public function userSecret()
     {
-        $response = $this->request('GET', 'user/secret');
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('エラー');
-        }
-
-        return $response;
+        return $this->request('GET', 'user/secret');
     }
 
     public function userToken()
     {
-        $response = $this->request('GET', 'user/api_token');
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('エラー');
-        }
-
-        return $response;
+        return $this->request('GET', 'user/api_token');
     }
 
     public function notesList()
     {
-        $response = $this->request('GET', 'notes/list');
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('エラー');
-        }
-
-        return $response;
+        return $this->request('GET', 'notes/list');
     }
 
     public function noteById($id)
@@ -285,12 +253,7 @@ class Client
         if (ctype_xdigit($id) === false){
             throw new OptionException('オプションエラー');
         }
-        $response = $this->request('GET', 'notes/'.$id);
 
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('エラー');
-        }
-
-        return $response;
+        return $this->request('GET', 'notes/'.$id);
     }
 }

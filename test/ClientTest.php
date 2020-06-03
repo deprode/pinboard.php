@@ -3,6 +3,12 @@
 
 use PHPUnit\Framework\TestCase;
 use PinboardPHP\Lib\Client;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
+use PinboardPHP\Lib\Exception\BadRespnoseException as PinBadResponseException;
+use PinboardPHP\Lib\Exception\AuthException;
+use PinboardPHP\Lib\Exception\ManyRequestException;
 
 class ClientTest extends TestCase
 {
@@ -21,6 +27,42 @@ class ClientTest extends TestCase
         $response = $client->lastUpdatePosts();
         $this->assertEquals($response->getStatusCode(), 200);
         $this->assertEquals($response->getBody()->getContents(), '{"update_time":"2020-05-13T15:37:07Z"}');
+    }
+
+    public function testAuthException()
+    {
+        $this->expectException(AuthException::class);
+
+        $request_mock = $this->createMock(Request::class);
+        $client_mock = $this->createMock(\GuzzleHttp\Client::class);
+        $response = new Response(401);
+        $client_mock->expects($this->any())->method('request')->will($this->throwException(new RequestException('Error', $request_mock, $response)));
+        $client = new Client(API_TOKEN, $client_mock);
+        $client->lastUpdatePosts();
+    }
+
+    public function testManyRequestException()
+    {
+        $this->expectException(ManyRequestException::class);
+
+        $request_mock = $this->createMock(Request::class);
+        $client_mock = $this->createMock(\GuzzleHttp\Client::class);
+        $response = new Response(429);
+        $client_mock->expects($this->any())->method('request')->will($this->throwException(new RequestException('Error', $request_mock, $response)));
+        $client = new Client(API_TOKEN, $client_mock);
+        $client->recentPosts();
+    }
+
+    public function testBadResponseException()
+    {
+        $this->expectException(PinBadResponseException::class);
+
+        $request_mock = $this->createMock(Request::class);
+        $client_mock = $this->createMock(\GuzzleHttp\Client::class);
+        $response = new Response(503);
+        $client_mock->expects($this->any())->method('request')->will($this->throwException(new RequestException('Error', $request_mock, $response)));
+        $client = new Client(API_TOKEN, $client_mock);
+        $client->lastUpdatePosts();
     }
 
     public function testRecentPosts()
