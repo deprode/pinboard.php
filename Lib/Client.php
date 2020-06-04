@@ -56,6 +56,8 @@ class Client
             else {
                 throw new \Exception($response);
             }
+        } catch (\Exception $e) {
+            throw new $e;
         }
         return $response;
     }
@@ -137,13 +139,7 @@ class Client
             throw new OptionException('オプションエラー');
         }
 
-        $response = $this->request('GET', 'posts/delete', $option);
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('エラー');
-        }
-
-        return $response;
+        return $this->request('GET', 'posts/delete', $option);
     }
 
     public function getPost($options)
@@ -160,13 +156,7 @@ class Client
             throw new OptionException('オプションエラー');
         }
 
-        $response = $this->request('GET', 'posts/get', []);
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('エラー');
-        }
-
-        return $response;
+        return $this->request('GET', 'posts/get', []);
     }
 
     public function allPosts($options = [])
