@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace PinboardPHP\Lib;
 
@@ -8,6 +9,7 @@ use PinboardPHP\Lib\Exception\AuthException;
 use PinboardPHP\Lib\Exception\ManyRequestException;
 use PinboardPHP\Lib\Exception\OptionException;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\ResponseInterface;
 
 class Client
 {
@@ -34,12 +36,11 @@ class Client
         $this->default_option['auth_token'] = $this->token;
     }
 
-    private function request(string $method, string $path, array $user_option = [])
+    private function request(string $method, string $path, array $user_option = []): ResponseInterface
     {
         $uri = $this->baseurl . $path;
         $option = $user_option + $this->default_option;
 
-        $response = null;
         try {
             $response = $this->client->request($method, $uri, $option);
         } catch (RequestException $e) {
@@ -62,29 +63,29 @@ class Client
         return $response;
     }
 
-    protected function isAuthError($response)
+    protected function isAuthError(ResponseInterface $response): bool
     {
         return $response && $response->getStatusCode() === 401;
     }
 
-    protected function isManyRequestError($response)
+    protected function isManyRequestError(ResponseInterface $response): bool
     {
         return $response && $response->getStatusCode() === 429;
     }
 
-    protected function isBadResponse($response)
+    protected function isBadResponse(ResponseInterface $response): bool
     {
         return is_null($response) || ($response && $response->getStatusCode() !== 200);
     }
 
-    public function lastUpdatePosts()
+    public function lastUpdatePosts(): ResponseInterface
     {
         $response = $this->request('GET', 'posts/update');
 
         return $response;
     }
 
-    public function recentPosts($option = [])
+    public function recentPosts(array $option = []): ResponseInterface
     {
         if ($this->validate->validate($option, ['tag' => 'tag', 'count' => 'integer'])){
             throw new OptionException('オプションエラー');
@@ -93,7 +94,7 @@ class Client
         return $this->request('GET', 'posts/recent', $option);
     }
 
-    public function datesPosts($option = [])
+    public function datesPosts(array $option = []): ResponseInterface
     {
         if ($this->validate->validate($option, ['tag' => 'tag'])){
             throw new OptionException('オプションエラー');
@@ -102,7 +103,7 @@ class Client
         return $this->request('GET', 'posts/dates', $option);
     }
 
-    public function addPost($url, $description, $options)
+    public function addPost(string $url, string $description, array $options): ResponseInterface
     {
         // posts/add
         $option = array_filter([
@@ -132,7 +133,7 @@ class Client
         return $this->request('GET', 'posts/add', $option);
     }
 
-    public function deletePost($url)
+    public function deletePost(string $url): ResponseInterface
     {
         $option = ['url' => $url];
         if ($this->validate->validate($option, ['url' => 'url'])){
@@ -142,7 +143,7 @@ class Client
         return $this->request('GET', 'posts/delete', $option);
     }
 
-    public function getPost($options)
+    public function getPost(array $options): ResponseInterface
     {
         // posts/get
         $option = array_filter([
@@ -159,7 +160,7 @@ class Client
         return $this->request('GET', 'posts/get', []);
     }
 
-    public function allPosts($options = [])
+    public function allPosts(array $options = []): ResponseInterface
     {
         $fromdt = isset($options['fromdt']) ? (date_create($options['fromdt']))->format('Y-m-d\TH:i:s\Z') : '';
         $todt = isset($options['todt']) ? (date_create($options['todt']))->format('Y-m-d\TH:i:s\Z') : '';
@@ -188,7 +189,7 @@ class Client
         return $this->request('GET', 'posts/all', $option);
     }
 
-    public function suggestPost($url)
+    public function suggestPost(string $url): ResponseInterface
     {
         $option = ['url' => $url];
         if ($this->validate->validate($option, ['url' => 'url'])){
@@ -198,7 +199,7 @@ class Client
         return $this->request('GET', 'posts/suggest', $option);
     }
 
-    public function deleteTag($tag)
+    public function deleteTag(string $tag): ResponseInterface
     {
         $option = ['tag' => $tag];
         if ($this->validate->validate($option, ['tag' => 'tag'])){
@@ -208,7 +209,7 @@ class Client
         return $this->request('GET', 'tags/delete', $option);
     }
 
-    public function renameTag($old, $new)
+    public function renameTag(string $old, string $new): ResponseInterface
     {
         $option = ['old' => $old, 'new' => $new];
         if ($this->validate->validate($option, ['old' => 'tag', 'new' => 'tag'])){
@@ -218,27 +219,27 @@ class Client
         return $this->request('GET', 'tags/rename', $option);
     }
 
-    public function getTags()
+    public function getTags(): ResponseInterface
     {
         return $this->request('GET', 'tags/get');
     }
 
-    public function userSecret()
+    public function userSecret(): ResponseInterface
     {
         return $this->request('GET', 'user/secret');
     }
 
-    public function userToken()
+    public function userToken(): ResponseInterface
     {
         return $this->request('GET', 'user/api_token');
     }
 
-    public function notesList()
+    public function notesList(): ResponseInterface
     {
         return $this->request('GET', 'notes/list');
     }
 
-    public function noteById($id)
+    public function noteById(string $id): ResponseInterface
     {
         if (ctype_xdigit($id) === false){
             throw new OptionException('オプションエラー');

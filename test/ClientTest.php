@@ -33,6 +33,7 @@ class ClientTest extends TestCase
     {
         $this->expectException(AuthException::class);
 
+        /**@var Psr\Http\Message\RequestInterface */
         $request_mock = $this->createMock(Request::class);
         $client_mock = $this->createMock(\GuzzleHttp\Client::class);
         $response = new Response(401);
@@ -45,6 +46,7 @@ class ClientTest extends TestCase
     {
         $this->expectException(ManyRequestException::class);
 
+        /**@var Psr\Http\Message\RequestInterface */
         $request_mock = $this->createMock(Request::class);
         $client_mock = $this->createMock(\GuzzleHttp\Client::class);
         $response = new Response(429);
@@ -57,6 +59,7 @@ class ClientTest extends TestCase
     {
         $this->expectException(PinBadResponseException::class);
 
+        /**@var Psr\Http\Message\RequestInterface */
         $request_mock = $this->createMock(Request::class);
         $client_mock = $this->createMock(\GuzzleHttp\Client::class);
         $response = new Response(503);
