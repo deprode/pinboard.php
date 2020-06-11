@@ -29,6 +29,7 @@ class OptionValidationTest extends TestCase
 
     public function testUrl()
     {
+        $this->assertTrue($this->v->validate(['url' => 'some_foo_bar'], ['url' => 'url']));
         $this->assertTrue($this->v->validate(['url' => 'scheme://example.com/'], ['url' => 'url']));
         $this->assertFalse($this->v->validate(['url' => 'https://example.com/'], ['url' => 'url']));
     }

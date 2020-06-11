@@ -38,7 +38,7 @@ class OptionValidation
         // The Safari-specific feed scheme is allowed but will be treated as a synonym for http.
         $allowed = ['http', 'https', 'javascript', 'mailto', 'ftp', 'file'];
         $parsed = parse_url($url);
-        return $parsed && in_array($parsed['scheme'], $allowed);
+        return $parsed && isset($parsed['scheme']) && in_array($parsed['scheme'], $allowed);
     }
 
     protected function title(string $title): bool
