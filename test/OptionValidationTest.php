@@ -21,6 +21,12 @@ class OptionValidationTest extends TestCase
         $this->assertFalse($this->v->validate(['not_allow' => 'xxx'], ['not_allow' => 'not_allow_type']));
     }
 
+    public function testGetErrors()
+    {
+        $this->v->validate(['tags' => bin2hex(random_bytes(128)), 'url' => 'foo-bar'], ['tags' => 'tag', 'url' => 'url']);
+        $this->assertEquals(['tags' => ['tag'], 'url' => ['url']], $this->v->getErrors());
+    }
+
     public function testTag()
     {
         $this->assertTrue($this->v->validate(['tags' => bin2hex(random_bytes(128))], ['tags' => 'tag']));

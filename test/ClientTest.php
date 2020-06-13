@@ -9,6 +9,7 @@ use GuzzleHttp\Psr7\Response;
 use PinboardPHP\Lib\Exception\BadRespnoseException as PinBadResponseException;
 use PinboardPHP\Lib\Exception\AuthException;
 use PinboardPHP\Lib\Exception\ManyRequestException;
+use PinboardPHP\Lib\Exception\OptionException;
 
 class ClientTest extends TestCase
 {
@@ -18,15 +19,6 @@ class ClientTest extends TestCase
         $response_mock = new GuzzleHttp\Psr7\Response(200,[],$response);
         $client_mock->expects($this->any())->method('request')->willReturn($response_mock);
         return $client_mock;
-    }
-
-    public function testLastUpdatePosts()
-    {
-        $client_mock = $this->getClientMock('{"update_time":"2020-05-13T15:37:07Z"}');
-        $client = new Client(API_TOKEN, $client_mock);
-        $response = $client->lastUpdatePosts();
-        $this->assertEquals($response->getStatusCode(), 200);
-        $this->assertEquals($response->getBody()->getContents(), '{"update_time":"2020-05-13T15:37:07Z"}');
     }
 
     public function testAuthException()
@@ -66,6 +58,23 @@ class ClientTest extends TestCase
         $client_mock->expects($this->any())->method('request')->will($this->throwException(new RequestException('Error', $request_mock, $response)));
         $client = new Client(API_TOKEN, $client_mock);
         $client->lastUpdatePosts();
+    }
+
+    public function testOptionException()
+    {
+        $this->expectException(OptionException::class);
+
+        $client = new Client(API_TOKEN);
+        $client->getPost(['meta' => 'foo/bar']);
+    }
+
+    public function testLastUpdatePosts()
+    {
+        $client_mock = $this->getClientMock('{"update_time":"2020-05-13T15:37:07Z"}');
+        $client = new Client(API_TOKEN, $client_mock);
+        $response = $client->lastUpdatePosts();
+        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals($response->getBody()->getContents(), '{"update_time":"2020-05-13T15:37:07Z"}');
     }
 
     public function testRecentPosts()

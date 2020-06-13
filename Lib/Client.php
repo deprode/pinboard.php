@@ -36,7 +36,7 @@ class Client
         $this->default_option['auth_token'] = $this->token;
     }
 
-    private function request(string $method, string $path, array $user_option = []): ResponseInterface
+    protected function request(string $method, string $path, array $user_option = []): ResponseInterface
     {
         $uri = $this->baseurl . $path;
         $option = $user_option + $this->default_option;
@@ -88,7 +88,7 @@ class Client
     public function recentPosts(array $option = []): ResponseInterface
     {
         if ($this->validate->validate($option, ['tag' => 'tag', 'count' => 'integer'])){
-            throw new OptionException('オプションエラー');
+            throw new OptionException($this->validate->getErrors());
         }
 
         return $this->request('GET', 'posts/recent', $option);
@@ -97,7 +97,7 @@ class Client
     public function datesPosts(array $option = []): ResponseInterface
     {
         if ($this->validate->validate($option, ['tag' => 'tag'])){
-            throw new OptionException('オプションエラー');
+            throw new OptionException($this->validate->getErrors());
         }
 
         return $this->request('GET', 'posts/dates', $option);
@@ -127,7 +127,7 @@ class Client
             'toread' => 'no',
         ];
         if ($this->validate->validate($option, $types)){
-            throw new OptionException('オプションエラー');
+            throw new OptionException($this->validate->getErrors());
         }
 
         return $this->request('GET', 'posts/add', $option);
@@ -137,7 +137,7 @@ class Client
     {
         $option = ['url' => $url];
         if ($this->validate->validate($option, ['url' => 'url'])){
-            throw new OptionException('オプションエラー');
+            throw new OptionException($this->validate->getErrors());
         }
 
         return $this->request('GET', 'posts/delete', $option);
@@ -154,7 +154,7 @@ class Client
         ]);
         $types = ['tag' => 'tag', 'dt' => 'datetime', 'url' => 'url', 'meta' => 'no'];
         if ($this->validate->validate($option, $types)){
-            throw new OptionException('オプションエラー');
+            throw new OptionException($this->validate->getErrors());
         }
 
         return $this->request('GET', 'posts/get', []);
@@ -183,7 +183,7 @@ class Client
         ];
 
         if ($this->validate->validate($option, $types)){
-            throw new OptionException('オプションエラー');
+            throw new OptionException($this->validate->getErrors());
         }
 
         return $this->request('GET', 'posts/all', $option);
@@ -193,7 +193,7 @@ class Client
     {
         $option = ['url' => $url];
         if ($this->validate->validate($option, ['url' => 'url'])){
-            throw new OptionException('オプションエラー');
+            throw new OptionException($this->validate->getErrors());
         }
 
         return $this->request('GET', 'posts/suggest', $option);
@@ -203,7 +203,7 @@ class Client
     {
         $option = ['tag' => $tag];
         if ($this->validate->validate($option, ['tag' => 'tag'])){
-            throw new OptionException('オプションエラー');
+            throw new OptionException($this->validate->getErrors());
         }
 
         return $this->request('GET', 'tags/delete', $option);
@@ -213,7 +213,7 @@ class Client
     {
         $option = ['old' => $old, 'new' => $new];
         if ($this->validate->validate($option, ['old' => 'tag', 'new' => 'tag'])){
-            throw new OptionException('オプションエラー');
+            throw new OptionException($this->validate->getErrors());
         }
 
         return $this->request('GET', 'tags/rename', $option);
@@ -242,7 +242,7 @@ class Client
     public function noteById(string $id): ResponseInterface
     {
         if (ctype_xdigit($id) === false){
-            throw new OptionException('オプションエラー');
+            throw new OptionException($this->validate->getErrors());
         }
 
         return $this->request('GET', 'notes/'.$id);

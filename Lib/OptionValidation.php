@@ -7,21 +7,30 @@ namespace PinboardPHP\Lib;
 
 class OptionValidation
 {
+    protected $errors;
+
     public function validate(array $options = [], array $types = []): bool
     {
         $isValid = false;
+        $this->errors = [];
         foreach ($types as $name => $type)
         {
             if ($this->isAllowType($type) === false || array_key_exists($name, $options) === false) {
                 continue;
             }
             $isValid |= !($this->$type($options[$name]));
+            $this->errors[$name][] = $type;
         }
 
         return (bool)$isValid;
     }
 
-    private function isAllowType(string $type): bool
+    public function getErrors()
+    {
+        return $this->errors;
+    }
+
+    protected function isAllowType(string $type): bool
     {
         return in_array($type, ['tag', 'url', 'title', 'text', 'datetime', 'date', 'yes', 'no', 'md5', 'integer', 'format']);
     }
