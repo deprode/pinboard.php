@@ -22,6 +22,8 @@ class OptionException extends Exception {
 
     public function __construct(array $errors, array $messages = null)
     {
+        parent::__construct($messages);
+
         $this->errors = $errors;
 
         $this->messages = $messages ?? [
