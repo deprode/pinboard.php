@@ -63,6 +63,17 @@ class Client
         return $response;
     }
 
+    public function format(ResponseInterface $response, bool $is_array = true): array
+    {
+        $contents = $response->getBody()->getContents();
+        // remove BOM
+        $contents = str_replace("\xEF\xBB\xBF",'',$contents);
+        // to array
+        $contents = json_decode($contents, $is_array);
+
+        return $contents;
+    }
+
     protected function isAuthError(ResponseInterface $response): bool
     {
         return $response && $response->getStatusCode() === 401;

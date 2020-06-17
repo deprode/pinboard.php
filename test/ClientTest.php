@@ -68,6 +68,14 @@ class ClientTest extends TestCase
         $client->getPost(['meta' => 'foo/bar']);
     }
 
+    public function testFormat()
+    {
+        $client_mock = $this->getClientMock("{\"update_time\":\"\xEF\xBB\xBF2020-05-13T15:37:07Z\"}");
+        $client = new Client(API_TOKEN, $client_mock);
+        $result = $client->format($client->lastUpdatePosts());
+        $this->assertEquals(['update_time' => '2020-05-13T15:37:07Z'], $result);
+    }
+
     public function testLastUpdatePosts()
     {
         $client_mock = $this->getClientMock('{"update_time":"2020-05-13T15:37:07Z"}');
