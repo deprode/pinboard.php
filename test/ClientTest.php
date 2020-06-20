@@ -86,14 +86,14 @@ class ClientTest extends TestCase
 
     public function testRecentPosts()
     {
-        $response_body = '{"date":"2020-05-20T00:54:47Z","user":"deprode","posts":[{"href":"https:\/\/example.com\/","description":"long description","extended":"","meta":"09876543210987654321098765432109","hash":"12345678901234567890123456789012","time":"2020-04-14T11:51:06Z","shared":"yes","toread":"yes","tags":"Testing"}]}';
+        $response_body = '{"date":"2020-05-20T00:54:47Z","user":"testuser","posts":[{"href":"https:\/\/example.com\/","description":"long description","extended":"","meta":"09876543210987654321098765432109","hash":"12345678901234567890123456789012","time":"2020-04-14T11:51:06Z","shared":"yes","toread":"yes","tags":"Testing"}]}';
         $client_mock = $this->getClientMock($response_body);
 
         $client = new Client(API_TOKEN, $client_mock);
         $response = $client->recentPosts(['tag' => 'Testing', 'count' => 100]);
         $this->assertEquals($response, [
             'date' => "2020-05-20T00:54:47Z",
-            'user' => 'deprode',
+            'user' => 'testuser',
             'posts' => [
                 [
                     'href' => 'https://example.com/',
@@ -111,14 +111,14 @@ class ClientTest extends TestCase
 
     public function testDatesPosts()
     {
-        $response_body = '{"user":"deprode","tag":"test","dates":{"2020-05-20":"1","2020-05-13":"4"}}';
+        $response_body = '{"user":"testuser","tag":"test","dates":{"2020-05-20":"1","2020-05-13":"4"}}';
         $client_mock = $this->getClientMock($response_body);
 
         $client = new Client(API_TOKEN, $client_mock);
         $response = $client->datesPosts(['tag' => 'Testing']);
         $this->assertEquals($response,
             [
-                'user' => 'deprode',
+                'user' => 'testuser',
                 'tag' => 'test',
                 'dates' => [
                     '2020-05-20' => '1',
