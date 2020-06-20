@@ -36,7 +36,7 @@ class Client
         $this->default_option['auth_token'] = $this->token;
     }
 
-    protected function request(string $method, string $path, array $user_option = []): ResponseInterface
+    public function request(string $method, string $path, array $user_option = []): ResponseInterface
     {
         $uri = $this->baseurl . $path;
         $option = $user_option + $this->default_option;
@@ -89,32 +89,35 @@ class Client
         return is_null($response) || ($response && $response->getStatusCode() !== 200);
     }
 
-    public function lastUpdatePosts(): ResponseInterface
+    protected function isDone(array $result = []): bool
     {
-        $response = $this->request('GET', 'posts/update');
-
-        return $response;
+        return isset($result['result']) && $result['result'] === 'done';
     }
 
-    public function recentPosts(array $option = []): ResponseInterface
+    public function lastUpdatePosts(): array
+    {
+        return $this->format($this->request('GET', 'posts/update'));
+    }
+
+    public function recentPosts(array $option = []): array
     {
         if ($this->validate->validate($option, ['tag' => 'tag', 'count' => 'integer'])){
             throw new OptionException($this->validate->getErrors());
         }
 
-        return $this->request('GET', 'posts/recent', $option);
+        return $this->format($this->request('GET', 'posts/recent', $option));
     }
 
-    public function datesPosts(array $option = []): ResponseInterface
+    public function datesPosts(array $option = []): array
     {
         if ($this->validate->validate($option, ['tag' => 'tag'])){
             throw new OptionException($this->validate->getErrors());
         }
 
-        return $this->request('GET', 'posts/dates', $option);
+        return $this->format($this->request('GET', 'posts/dates', $option));
     }
 
-    public function addPost(string $url, string $description, array $options): ResponseInterface
+    public function addPost(string $url, string $description, array $options): bool
     {
         // posts/add
         $option = array_filter([
@@ -141,20 +144,23 @@ class Client
             throw new OptionException($this->validate->getErrors());
         }
 
-        return $this->request('GET', 'posts/add', $option);
+        $result = $this->format($this->request('GET', 'posts/add', $option));
+        return $this->isDone($result);
     }
 
-    public function deletePost(string $url): ResponseInterface
+    public function deletePost(string $url): bool
     {
         $option = ['url' => $url];
         if ($this->validate->validate($option, ['url' => 'url'])){
             throw new OptionException($this->validate->getErrors());
         }
 
-        return $this->request('GET', 'posts/delete', $option);
+        $result = $this->format($this->request('GET', 'posts/delete', $option));
+
+        return $this->isDone($result);
     }
 
-    public function getPost(array $options): ResponseInterface
+    public function getPost(array $options): array
     {
         // posts/get
         $option = array_filter([
@@ -167,11 +173,10 @@ class Client
         if ($this->validate->validate($option, $types)){
             throw new OptionException($this->validate->getErrors());
         }
-
-        return $this->request('GET', 'posts/get', $option);
+        return $this->format($this->request('GET', 'posts/get', $option));
     }
 
-    public function allPosts(array $options = []): ResponseInterface
+    public function allPosts(array $options = []): array
     {
         $fromdt = isset($options['fromdt']) ? (date_create($options['fromdt']))->format('Y-m-d\TH:i:s\Z') : '';
         $todt = isset($options['todt']) ? (date_create($options['todt']))->format('Y-m-d\TH:i:s\Z') : '';
@@ -197,65 +202,71 @@ class Client
             throw new OptionException($this->validate->getErrors());
         }
 
-        return $this->request('GET', 'posts/all', $option);
+        return $this->format($this->request('GET', 'posts/all', $option));
     }
 
-    public function suggestPost(string $url): ResponseInterface
+    public function suggestPost(string $url): array
     {
         $option = ['url' => $url];
         if ($this->validate->validate($option, ['url' => 'url'])){
             throw new OptionException($this->validate->getErrors());
         }
 
-        return $this->request('GET', 'posts/suggest', $option);
+        return $this->format($this->request('GET', 'posts/suggest', $option));
     }
 
-    public function deleteTag(string $tag): ResponseInterface
+    public function deleteTag(string $tag): bool
     {
         $option = ['tag' => $tag];
         if ($this->validate->validate($option, ['tag' => 'tag'])){
             throw new OptionException($this->validate->getErrors());
         }
 
-        return $this->request('GET', 'tags/delete', $option);
+        $result = $this->format($this->request('GET', 'tags/delete', $option));
+        return $this->isDone($result);
     }
 
-    public function renameTag(string $old, string $new): ResponseInterface
+    public function renameTag(string $old, string $new): bool
     {
         $option = ['old' => $old, 'new' => $new];
         if ($this->validate->validate($option, ['old' => 'tag', 'new' => 'tag'])){
             throw new OptionException($this->validate->getErrors());
         }
 
-        return $this->request('GET', 'tags/rename', $option);
+        $result = $this->format($this->request('GET', 'tags/rename', $option));
+        return $this->isDone($result);
     }
 
-    public function getTags(): ResponseInterface
+    public function getTags(): array
     {
-        return $this->request('GET', 'tags/get');
+        return $this->format($this->request('GET', 'tags/get'));
     }
 
-    public function userSecret(): ResponseInterface
+    public function userSecret(): string
     {
-        return $this->request('GET', 'user/secret');
+        $result = $this->format($this->request('GET', 'user/secret'));
+
+        return $result['result'] ?? '';
     }
 
-    public function userToken(): ResponseInterface
+    public function userToken(): string
     {
-        return $this->request('GET', 'user/api_token');
+        $result = $this->format($this->request('GET', 'user/api_token'));
+
+        return $result['result'] ?? '';
     }
 
-    public function notesList(): ResponseInterface
+    public function notesList(): array
     {
-        return $this->request('GET', 'notes/list');
+        return $this->format($this->request('GET', 'notes/list'));
     }
 
-    public function noteById(string $id): ResponseInterface
+    public function noteById(string $id): array
     {
         if (ctype_xdigit($id) === false){
             throw new OptionException($this->validate->getErrors());
         }
 
-        return $this->request('GET', 'notes/'.$id);
+        return $this->format($this->request('GET', 'notes/'.$id));
     }
 }
