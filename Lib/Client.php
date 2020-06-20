@@ -168,7 +168,7 @@ class Client
             throw new OptionException($this->validate->getErrors());
         }
 
-        return $this->request('GET', 'posts/get', []);
+        return $this->request('GET', 'posts/get', $option);
     }
 
     public function allPosts(array $options = []): ResponseInterface
