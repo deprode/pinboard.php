@@ -139,7 +139,7 @@ class ClientTest extends TestCase
 
     public function testGetPost()
     {
-        $response_body = '{"date":"2020-05-01T00:00:00Z","user":"testuser","posts":[{"href":"https:\/\/example.com\/","description":"Example site","extended":"","meta":"92959a96fd69146c5fe7cbde6e5720f2","hash":"54439a52e2efc520d5f9e5e615b89a5d","time":"2020-05-01T00:00:00Z","shared":"yes","toread":"yes","tags":"foo"}';
+        $response_body = '{"date":"2020-05-01T00:00:00Z","user":"testuser","posts":[{"href":"https:\/\/example.com\/","description":"Example site","extended":"","meta":"92959a96fd69146c5fe7cbde6e5720f2","hash":"54439a52e2efc520d5f9e5e615b89a5d","time":"2020-05-01T00:00:00Z","shared":"yes","toread":"yes","tags":"foo"}]}';
         $client_mock = $this->getClientMock($response_body);
 
         $client = new Client(API_TOKEN, $client_mock);
@@ -150,7 +150,7 @@ class ClientTest extends TestCase
 
     public function testAllPosts()
     {
-        $response_body = '[{"href":"https:\/\/example.com\/first-post","description":"testing first site","extended":"test1","meta":"3bad0cf612e5834221d7242b8fb0f2c4","hash":"6cfedbe75f413c56b6ce79e6fa102aba","time":"2020-05-27T03:13:23Z","shared":"yes","toread":"yes","tags":"foo"},{"href":"https:\/\/example.com\/second\/post","description":"testing second site.","extended":"test2","meta":"c86f6de807c5fef2ddda6d2422e12eea","hash":"ca1e6357399774951eed4628d69eb84b","time":"2020-05-27T03:13:21Z","shared":"yes","toread":"yes","tags":"bar"}];';
+        $response_body = '[{"href":"https:\/\/example.com\/first-post","description":"testing first site","extended":"test1","meta":"3bad0cf612e5834221d7242b8fb0f2c4","hash":"6cfedbe75f413c56b6ce79e6fa102aba","time":"2020-05-27T03:13:23Z","shared":"yes","toread":"yes","tags":"foo"},{"href":"https:\/\/example.com\/second\/post","description":"testing second site.","extended":"test2","meta":"c86f6de807c5fef2ddda6d2422e12eea","hash":"ca1e6357399774951eed4628d69eb84b","time":"2020-05-27T03:13:21Z","shared":"yes","toread":"yes","tags":"bar"}]';
         $client_mock = $this->getClientMock($response_body);
 
         $client = new Client(API_TOKEN, $client_mock);
@@ -227,7 +227,7 @@ class ClientTest extends TestCase
 
     public function testNotesList()
     {
-        $response_body = '{"count":1,"notes":[{"id":"cf73bfc02e00edaa1e2b","hash":"0bbca3cba9246bbbda2c","title":"Paul Graham on Hirin\' The Ladies","length":"890","created_at":"2011-10-28 13:37:23","updated_at":"2011-10-28 13:37:23"}';
+        $response_body = '{"count":1,"notes":[{"id":"cf73bfc02e00edaa1e2b","hash":"0bbca3cba9246bbbda2c","title":"Paul Graham on Hirin\' The Ladies","length":"890","created_at":"2011-10-28 13:37:23","updated_at":"2011-10-28 13:37:23"}]}';
         $client_mock = $this->getClientMock($response_body);
 
         $client = new Client(API_TOKEN, $client_mock);
